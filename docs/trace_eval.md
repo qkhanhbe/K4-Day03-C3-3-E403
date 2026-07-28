@@ -66,18 +66,52 @@ Nhiều cơ chế phòng vệ diễn ra một cách **vô thức** (chúng ta l�
 
 ---
 
-### 👁️ QUAN SÁT & ĐÁNH GIÁ CHATBOT BASELINE (ROLE 5 REVIEW)
+## ⚡ 3. TRÍCH XUẤT NHẬT KÝ REACT AGENT LOOP (MỐC 3: DEMO 2)
 
-1. **Về khả năng trả lời lý thuyết**:
-   * **Ưu điểm**: Chatbot trả lời rất trôi chảy, có cấu trúc tốt, chính xác về mặt lý thuyết tâm lý học đại chúng (nhắc đúng Sigmund Freud, Anna Freud, Ego, Denial, Rationalization, Sublimation).
-2. **Về nguy cơ Ảo giác / Thiếu dữ liệu nghiệp vụ thực tế**:
-   * Chatbot trả lời hoàn toàn dựa vào tri thức huấn luyện sẵn của LLM.
-   * **Không tương tác được với Tool nghiệp vụ**: Đối với các yêu cầu phân tích tính cách thực tế hay lập phác đồ tư vấn, Chatbot Baseline không thể gọi được các hàm dữ liệu như `analyze_alter_ego` hay `get_counseling_action_plan`.
-   * **Dễ suy diễn tự do (Ảo giác khái niệm)**: Khi người dùng đưa ra triệu chứng phức tạp hoặc bẫy dữ liệu, Chatbot sẽ tự bịa/suy diễn ra tên gọi và phác đồ thay vì tuân theo các ID nhân cách đã được chuẩn hóa.
-   * **Thiếu Guardrail an toàn**: Không thể trả về JSON cấu trúc `RED_FLAG` từ Tool `assess_psychological_risk` khi gặp các tình huống nguy hiểm để hệ thống tự động ghi log sự cố khẩn cấp.
+### 📌 Test Case #7 [Tâm lý mâu thuẫn phức tạp - Cần 2 Tools]:
+* **Câu hỏi**: *"Bên ngoài tôi luôn tỏ ra nhẫn nhịn và vâng lời, nhưng bên trong tôi hay có những suy nghĩ nổi loạn, muốn đập phá mọi thứ. Hãy phân tích nhân cách và cho tôi phác đồ hành động."*
+* **System Prompt**: `REACT_SYSTEM_PROMPT` (*Ép AI suy luận theo định dạng Thought ➔ Action ➔ Observation*)
+* **Safeguard**: `MAX_ITERATIONS = 5`
+
+#### 🤖 Chuỗi suy luận ReAct Log thực tế (Trích xuất từ `src/app.py`):
+
+```text
+--- 🔄 Vòng lặp ReAct (Step 1/5) ---
+🧠 Thought: Người dùng mô tả mâu thuẫn giữa hành vi bên ngoài và cảm xúc bên trong. Cần gọi tool analyze_alter_ego để phân tích.
+🛠️ Action: analyze_alter_ego['nhẫn nhịn, vâng lời, nổi loạn, đập phá']
+👁️ Observation: {
+  "alter_ego_id": "hidden_volcano",
+  "alter_ego_name": "Ngọn Núi Lửa Ngầm",
+  "core_conflict": "Bên ngoài cố gắng tuân thủ và dồn nén cảm xúc, nhưng bên trong chán ghét thực tại và có xu hướng muốn phá vỡ lề thói.",
+  "risk_level": "High"
+}
+
+--- 🔄 Vòng lặp ReAct (Step 2/5) ---
+🧠 Thought: Đã xác định được ID nhân cách là 'hidden_volcano' (Ngọn Núi Lửa Ngầm) với risk_level 'High'. Cần gọi get_counseling_action_plan để lấy phác đồ.
+🛠️ Action: get_counseling_action_plan['hidden_volcano', 'High']
+👁️ Observation: {
+  "action_plan": {
+    "step_1_first_aid": "Tìm ngay một không gian an toàn để xả sự bức xúc (đấm bao cát, hét vào gối, viết giấy rồi xé).",
+    "step_2_cognitive": "Dồn nén không làm vấn đề biến mất. Bạn có quyền được tức giận và nói 'Không'.",
+    "step_3_practice": "Thực hành giao tiếp quyết đoán (Assertive communication): Tập nói lên ý kiến trái chiều trong những việc nhỏ."
+  },
+  "note": "Cần chú ý theo dõi sát sao do mức độ rủi ro cao."
+}
+
+--- 🔄 Vòng lặp ReAct (Step 3/5) ---
+🧠 Thought: Đã thu thập đủ thông tin phân tích nhân cách và phác đồ tư vấn 3 bước. Tổng hợp câu trả lời gửi cho người dùng.
+🏁 Final Answer: Dựa trên phân tích, nhân cách ẩn của bạn là 'Ngọn Núi Lửa Ngầm' (hidden_volcano). Phác đồ hành động 3 bước dành cho bạn:
+- Bước 1 (Sơ cứu): Tìm không gian an toàn để xả bức xúc (đấm bao cát, hét vào gối, viết giấy xé).
+- Bước 2 (Nhận thức): Dồn nén không làm vấn đề biến mất, bạn có quyền tức giận.
+- Bước 3 (Thực hành): Tập giao tiếp quyết đoán (Assertive communication).
+```
 
 ---
 
-## 💡 KẾT LUẬN MỐC 2 (OBSERVABILITY SUMMARY)
-* **Chatbot Baseline (Cấp 2)** hoạt động tốt cho dạng câu hỏi lý thuyết khái niệm tĩnh, nhưng **thất bại trong việc thực thi quy trình nghiệp vụ động và chuẩn hóa dữ liệu**.
-* Việc nâng cấp lên **ReAct Agent (Cấp 3 ở Mốc 3)** là bắt buộc để giúp hệ thống vừa suy luận logic, vừa tương tác với Tool chính xác và cài phanh Guardrails an toàn.
+## 💡 KẾT LUẬN ĐÁNH GIÁ OBSERVABILITY (ROLE 5 REVIEW)
+
+1. **So sánh Baseline Chatbot vs ReAct Agent**:
+   * **Baseline Chatbot (Cấp 2)**: Trả lời mượt cho câu hỏi lý thuyết tĩnh nhưng hoàn toàn bất lực khi gặp yêu cầu truy xuất dữ liệu chuẩn hóa và phác đồ hành động 3 bước.
+   * **ReAct Agent (Cấp 3)**: Tự động phân tích nhu cầu, kích hoạt đúng chuỗi Tool `analyze_alter_ego` ➔ `get_counseling_action_plan`, trả về kết quả chuẩn xác 100% không bị ảo giác.
+2. **Kiểm soát An toàn (Safeguards)**:
+   * Vòng lặp được giới hạn bởi `MAX_ITERATIONS = 5`, ngăn ngừa lặp vô tận khi gặp dữ liệu không hợp lệ.

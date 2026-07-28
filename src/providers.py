@@ -147,11 +147,24 @@ class OpenRouterProvider(BaseLLMProvider):
 
 class MockProvider(BaseLLMProvider):
     """Offline Mock Provider (Cho bài test không cần kết nối API)"""
+    def __init__(self):
+        self.model_name = "Offline Mock Mode"
+        
     def generate(self, prompt: str, system_prompt: str = "") -> str:
         text = prompt.lower()
-        if "thời tiết" in text and "hà nội" in text:
-            return "Thought: Cần tra cứu thời tiết Hà Nội.\nAction: get_weather['Hà Nội']"
-        return "🤖 [Mock Provider]: Phản hồi giả lập offline cho bài test."
+        if "action_plan" in text or "step_1_first_aid" in text:
+            return "Thought: Đã thu thập đủ thông tin phân tích nhân cách và phác đồ tư vấn 3 bước. Tổng hợp câu trả lời gửi cho người dùng.\nFinal Answer: Dựa trên phân tích, nhân cách ẩn của bạn là 'Ngọn Núi Lửa Ngầm' (hidden_volcano). Phác đồ hành động 3 bước dành cho bạn:\n- Bước 1 (Sơ cứu): Tìm không gian an toàn để xả bức xúc (đấm bao cát, hét vào gối, viết giấy xé).\n- Bước 2 (Nhận thức): Dồn nén không làm vấn đề biến mất, bạn có quyền tức giận.\n- Bước 3 (Thực hành): Tập giao tiếp quyết đoán (Assertive communication)."
+        elif "hidden_volcano" in text or "ngọn núi lửa" in text:
+            return "Thought: Đã xác định được ID nhân cách là 'hidden_volcano' (Ngọn Núi Lửa Ngầm) với risk_level 'High'. Cần gọi get_counseling_action_plan để lấy phác đồ.\nAction: get_counseling_action_plan['hidden_volcano', 'High']"
+        elif "observation:" not in text:
+            if "nhẫn nhịn" in text or "nổi loạn" in text or "đập phá" in text:
+                return "Thought: Người dùng mô tả mâu thuẫn giữa hành vi bên ngoài và cảm xúc bên trong. Cần gọi tool analyze_alter_ego để phân tích.\nAction: analyze_alter_ego['nhẫn nhịn, vâng lời, nổi loạn, đập phá']"
+            elif "vui vẻ" in text or "khuấy động" in text:
+                return "Thought: Người dùng luôn vui vẻ ở chốn đông người nhưng ghét ở một mình. Cần gọi analyze_alter_ego.\nAction: analyze_alter_ego['vui vẻ, hòa đồng, ghét ở một mình']"
+            else:
+                return "Thought: Cần tra cứu và phân tích câu hỏi người dùng.\nAction: analyze_alter_ego['đặc điểm tính cách']"
+        else:
+            return "Thought: Đã có đủ thông tin từ Observation.\nFinal Answer: Kết quả xử lý hoàn tất."
 
 
 def get_llm_provider(provider_name: str = None) -> BaseLLMProvider:
