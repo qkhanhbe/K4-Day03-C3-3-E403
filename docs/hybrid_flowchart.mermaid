@@ -1,0 +1,17 @@
+graph TD
+    A[User Input / Câu hỏi] --> B{Phân loại Intent}
+    
+    B -->|Đơn giản / Giao tiếp thông thường| C[Chatbot Path]
+    C --> D[LLM trả lời trực tiếp không dùng Tools]
+    D --> E[Hiển thị kết quả]
+    
+    B -->|Phức tạp / Cần phân tích tâm lý| F[ReAct Agent Path]
+    F --> G[Thought: Suy luận bước tiếp theo]
+    G --> H{Cần gọi Tool?}
+    
+    H -->|Có| I[Action: Gọi Tool]
+    I --> J[Observation: Kết quả từ Tool]
+    J --> G
+    
+    H -->|Không| K[Final Answer: Tổng hợp câu trả lời]
+    K --> E
