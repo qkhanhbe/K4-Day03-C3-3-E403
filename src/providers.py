@@ -34,14 +34,28 @@ class GeminiProvider(BaseLLMProvider):
         if not self.api_key or self.api_key == "your_gemini_api_key_here":
             return "[Gemini Error]: Chưa cấu hình GEMINI_API_KEY trong file .env!"
         try:
-            from google import genai
-            client = genai.Client(api_key=self.api_key)
-            contents = f"{system_prompt}\n\n{prompt}" if system_prompt else prompt
-            response = client.models.generate_content(
-                model=self.model_name,
-                contents=contents
-            )
-            return response.text
+            try:
+                from google import genai
+                client = genai.Client(api_key=self.api_key)
+                contents = f"{system_prompt}\n\n{prompt}" if system_prompt else prompt
+                response = client.models.generate_content(
+                    model=self.model_name,
+                    contents=contents
+                )
+                return response.text
+            except (ImportError, AttributeError):
+                url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model_name}:generateContent?key={self.api_key}"
+                payload = {
+                    "contents": [{"parts": [{"text": prompt}]}]
+                }
+                if system_prompt:
+                    payload["systemInstruction"] = {"parts": [{"text": system_prompt}]}
+                res = requests.post(url, json=payload, timeout=30)
+                if res.status_code == 200:
+                    data = res.json()
+                    return data["candidates"][0]["content"]["parts"][0]["text"]
+                else:
+                    return f"[Gemini REST API Error {res.status_code}]: {res.text}"
         except Exception as e:
             return f"[Gemini Exception]: {str(e)}"
 
