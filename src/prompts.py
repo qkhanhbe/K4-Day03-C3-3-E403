@@ -30,6 +30,6 @@ Final Answer: Câu trả lời hoàn chỉnh cuối cùng gửi cho người dù
 BẮT ĐẦU:
 """
 
-# 🛡️ GUARDRAILS CONFIGURATION (PHANH AN TOÀN)
-MAX_ITERATIONS = 3  # Giới hạn tối đa 3 vòng lặp Thought-Action để tránh lặp vô tận
+# GUARDRAILS CONFIGURATION (PHANH AN TOÀN)
+MAX_ITERATIONS = 5  # Giới hạn tối đa 5 vòng lặp Thought-Action để tránh lặp vô tận
 TIMEOUT_SECONDS = 10  # Timeout cho mỗi lần gọi tool
