@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab 3: Chatbot vs ReAct Agent Simulator</title>
+    <!-- Google Fonts: Be Vietnam Pro -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="main-header">
+            <div class="header-content">
+                <div class="brand">
+                    <span class="badge-tag">VinUni AI Lab 3</span>
+                    <h1>Chatbot vs ReAct Agent <span>Simulator</span></h1>
+                </div>
+                <div class="provider-status" id="providerStatus">
+                    <span class="status-dot online"></span>
+                    <span class="provider-name">LLM Provider: Gemma 4 / ReAct Engine</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Test Case Selector Bar -->
+        <section class="test-cases-section">
+            <div class="section-title">
+                <span class="icon">🧪</span>
+                <h3>Chọn Test Case Thử Nghiệm (Config/test_cases.json)</h3>
+            </div>
+            <div class="preset-pills" id="presetPills">
+                <!-- Javascript will load test cases here -->
+            </div>
+        </section>
+
+        <!-- Input Box -->
+        <section class="input-section">
+            <div class="input-wrapper horizontal-layout">
+                <textarea id="userQuery" rows="3" placeholder="Nhập câu hỏi hoặc tâm sự của bạn để so sánh Chatbot vs ReAct Agent...">Bên ngoài tôi luôn tỏ ra nhẫn nhịn và vâng lời, nhưng bên trong tôi hay có những suy nghĩ nổi loạn, muốn đập phá mọi thứ. Hãy phân tích nhân cách và cho tôi phác đồ hành động.</textarea>
+                <button id="runBtn" class="btn-primary">
+                    <span class="btn-text">🚀 Chạy So Sánh</span>
+                    <span class="spinner hidden"></span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Collapsible Tool Registry & Guardrails Card -->
+        <details class="learn-system-card">
+            <summary class="learn-card-summary">
+                <div class="summary-title">
+                    <span class="icon font-icon">🛠️</span>
+                    <span>Tool Registry &amp; Guardrails System Architecture (Chi Tiết 4 Công Cụ &amp; Phanh An Toàn)</span>
+                </div>
+                <span class="toggle-badge">Mở rộng / Rút gọn ▼</span>
+            </summary>
+            <div class="learn-card-body">
+                <div class="learn-grid four-cards">
+                    <!-- Card Tool 1 -->
+                    <div class="learn-box tool-card">
+                        <div class="tool-badge badge-t1">Tool 1</div>
+                        <h4>🔍 analyze_alter_ego[traits]</h4>
+                        <p class="tool-desc">Phân tích hành vi mâu thuẫn để khai quật "Nhân cách thứ 2" (Alter Ego ID) chuẩn hóa trong cơ sở dữ liệu.</p>
+                        <div class="tool-details">
+                            <strong>📥 Input:</strong> <code>traits</code> (Đặc điểm tính cách, mâu thuẫn cảm xúc)<br>
+                            <strong>📤 Output JSON:</strong>
+                            <ul>
+                                <li><code>alter_ego_id</code>: <code>free_child</code>, <code>hidden_volcano</code>, <code>anxious_achiever</code>, <code>hedgehog_dilemma</code>, <code>solitary_sage</code></li>
+                                <li><code>alter_ego_name</code> &amp; <code>core_conflict</code></li>
+                                <li><code>risk_level</code>: Low / Medium / High</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Card Tool 2 -->
+                    <div class="learn-box tool-card">
+                        <div class="tool-badge badge-t2">Tool 2</div>
+                        <h4>📋 get_counseling_action_plan</h4>
+                        <p class="tool-desc">Xuất phác đồ tư vấn hành động 3 bước chuẩn y khoa dựa trên ID nhân cách &amp; mức độ rủi ro.</p>
+                        <div class="tool-details">
+                            <strong>📥 Input:</strong> <code>alter_ego_id</code>, <code>risk_level</code><br>
+                            <strong>📤 Output JSON (Phác đồ 3 bước):</strong>
+                            <ul>
+                                <li><code>step_1_first_aid</code>: Sơ cứu giải tỏa cảm xúc khẩn cấp</li>
+                                <li><code>step_2_cognitive</code>: Nhận thức &amp; xoa dịu mâu thuẫn nội tâm</li>
+                                <li><code>step_3_practice</code>: Bài tập thực hành giao tiếp &amp; hành vi</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Card Tool 3 -->
+                    <div class="learn-box tool-card">
+                        <div class="tool-badge badge-t3">Tool 3</div>
+                        <h4>🚨 assess_psychological_risk</h4>
+                        <p class="tool-desc">Đánh giá nguy cơ tâm lý nguy hiểm khẩn cấp (Red Flag: tự làm tổn thương, tự tử, ảo thính, bế tắc).</p>
+                        <div class="tool-details">
+                            <strong>📥 Input:</strong> <code>symptoms</code> (Triệu chứng nguy cơ)<br>
+                            <strong>📤 Output JSON (Cảnh báo Red Flag):</strong>
+                            <ul>
+                                <li><code>risk_status</code>: <code>RED_FLAG</code></li>
+                                <li><code>urgency</code>: <code>CRITICAL</code></li>
+                                <li>Tự động ngắt phân tích &amp; kích hoạt <strong>Hotline 111 / 115</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Card Tool 4 / Guardrails -->
+                    <div class="learn-box tool-card">
+                        <div class="tool-badge badge-t4">Guardrail Engine</div>
+                        <h4>🛡️ Phanh An Toàn &amp; Giới Hạn</h4>
+                        <p class="tool-desc">Bộ kiểm soát phanh an toàn bảo vệ Agent khỏi bẫy lặp vô tận, dữ liệu rác và prompt injection.</p>
+                        <div class="tool-details">
+                            <strong>⚙️ Cấu hình phanh Guardrails:</strong>
+                            <ul>
+                                <li><code>MAX_ITERATIONS = 5</code>: Tự động ngắt lặp an toàn khi gặp rác (%#@!) hoặc lỗi lặp.</li>
+                                <li><code>TIMEOUT_SECONDS = 10</code>: Giới hạn thời gian chờ xử lý mỗi Tool.</li>
+                                <li><code>Red Flag Override</code>: Ưu tiên ngắt lặp cấp cứu y tế.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </details>
+
+        <!-- Main Comparison Workspace -->
+        <main class="workspace">
+            <!-- Left Column: Baseline Chatbot -->
+            <div class="card column-card baseline-column">
+                <div class="column-header">
+                    <div class="column-title">
+                        <span class="level-badge badge-c2">Cấp 2</span>
+                        <h2>Chatbot Baseline</h2>
+                    </div>
+                    <p class="column-desc">Chỉ sử dụng LLM sinh text tĩnh, không có Tool, dễ bị ảo giác</p>
+                </div>
+                <div class="column-body" id="baselineBody">
+                    <div class="placeholder-state">
+                        <span class="large-icon">💬</span>
+                        <p>Bấm <strong>"Chạy So Sánh"</strong> để xem phản hồi của Chatbot gốc</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: ReAct Agent -->
+            <div class="card column-card react-column">
+                <div class="column-header">
+                    <div class="column-title">
+                        <span class="level-badge badge-c3">Cấp 3</span>
+                        <h2>ReAct Agent Loop</h2>
+                    </div>
+                    <p class="column-desc">Chuỗi suy luận <code>Thought ➔ Action ➔ Observation</code> &amp; Guardrails</p>
+                </div>
+                <div class="column-body" id="reactBody">
+                    <div class="placeholder-state">
+                        <span class="large-icon">🧠</span>
+                        <p>Bấm <strong>"Chạy So Sánh"</strong> để quan sát chuỗi suy luận từng bước của Agent</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Marked.js for Markdown Formatting -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
